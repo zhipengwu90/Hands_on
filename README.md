@@ -1,6 +1,6 @@
 # Hands On
 
--
+---
 ### Project topic
 
 Welcome to Hands On application! This application allows users to request and complete errands and small tasks  and allows users who browse and accept requests to complete errands or small tasks, and accept the Requestor in their local area.
@@ -8,8 +8,8 @@ Welcome to Hands On application! This application allows users to request and co
 ### Features
 
 * **Requestors**: 
-Users who post requests for errands or small tasks to be completed, and accept the Helper based on Helper’s ratings and reviews.
-* **Helpers**: Users who browse and accept requests to complete errands or small tasks, and accept the Requestor based on Requestor’s ratings and reviews.
+Users can post requests for errands or small tasks to be completed, and accept the Helper based on Helper’s ratings and reviews.
+* **Helpers**: Users can browse and accept requests to complete errands or small tasks, and accept the Requestor based on Requestor’s ratings and reviews.
 
 ---
 
@@ -22,7 +22,10 @@ Expo is used to run/test application on Android and iOS during the development.
 
 ### How to Install and Run the Project
 
-Download this repo to your local machine, 
+* clone this repo to your local machine
+* cd Hands_on
+* npm start
+
 
 ---
 
