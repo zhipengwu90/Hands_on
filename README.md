@@ -1,6 +1,5 @@
 # Hands On
 
----
 ### Project topic
 
 Welcome to Hands On application! This application allows users to request and complete errands and small tasks  and allows users who browse and accept requests to complete errands or small tasks, and accept the Requestor in their local area.
@@ -34,5 +33,5 @@ Expo is used to run/test application on Android and iOS during the development.
 ### Author
 * Zhipeng Wu
 
---
+
 Thank you for using our Hands On application application! We hope you find it useful and convenient.
