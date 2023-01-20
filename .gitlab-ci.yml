@@ -17,7 +17,6 @@ variables:
   ANDROID_SDK_TOOLS: "7583922"
 
 
-
 # Packages installation before running script
 before_script:
   - apt-get --quiet update --yes
