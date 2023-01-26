@@ -23,7 +23,11 @@ Expo is used to run/test application on Android and iOS during the development.
 
 * clone this repo to your local machine
 * cd Hands_on
+* npm install
+    - To install all the dependencies
 * npm start
+    - if you have ios simulator in your Macbook, use the command: npm run ios
+    - if you have android simulator, use the command: npm run android
 
 
 ---
