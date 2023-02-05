@@ -1,5 +1,6 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
 
 function NewTaskInput({textInputConfig, style, iconName, label}) {
   return (

@@ -62,6 +62,17 @@ function SignUpHelper(props) {
               placeholderTextColor: "#f7f3f3a3",
             }}
           />
+                    <Input
+            style={styles.inputContent}
+            iconName="lock-closed-outline"
+            iconColor="white"
+            textInputConfig={{
+              placeholder: "Confirm Password",
+              secureTextEntry: true,
+              color: "white",
+              placeholderTextColor: "#f7f3f3a3",
+            }}
+          />
         </View>
         <View style={styles.checkBox}>
           <BouncyCheckbox

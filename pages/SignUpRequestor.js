@@ -13,16 +13,24 @@ import GlobalStyles from "../constants/GlobalStyles";
 import Input from "../components/Input";
 import React, { useState } from "react";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import AuthContent from "../components/ReAuth/AuthContent"
 
 function SignUpRequestor(props) {
   const [isSelected, setSelection] = useState(false);
-  const [isError, setError] =useState(false);
+  const [isError, setError] = useState(false);
+
 
 
 
   return (
     <SafeAreaView style={[GlobalStyles.AndroidSafeArea, styles.container]}>
-      <View>
+
+      <AuthContent
+        onLogin = {props.onPress}
+      >
+
+      </AuthContent>
+      {/* <View>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Create A</Text>
           <Text style={styles.title}>Requestor Account</Text>
@@ -32,6 +40,8 @@ function SignUpRequestor(props) {
             style={styles.inputContent}
             iconName="person-outline"
             iconColor="white"
+            
+            value={enteredName}
             textInputConfig={{
               placeholder: "Username",
               autoCorrect: false,
@@ -42,6 +52,7 @@ function SignUpRequestor(props) {
           <Input
             style={styles.inputContent}
             iconName="mail-open-outline"
+            value={enteredEmail}
             iconColor="white"
             textInputConfig={{
               placeholder: "Email",
@@ -53,10 +64,23 @@ function SignUpRequestor(props) {
           />
           <Input
             style={styles.inputContent}
+            value={enteredPassword}
             iconName="lock-closed-outline"
             iconColor="white"
             textInputConfig={{
               placeholder: "Password",
+              secureTextEntry: true,
+              color: "white",
+              placeholderTextColor: "#f7f3f3a3",
+            }}
+          />
+          <Input
+            style={styles.inputContent}
+            value ={enteredConfirmPassword}
+            iconName="lock-closed-outline"
+            iconColor="white"
+            textInputConfig={{
+              placeholder: "Confirm Password",
               secureTextEntry: true,
               color: "white",
               placeholderTextColor: "#f7f3f3a3",
@@ -83,43 +107,45 @@ function SignUpRequestor(props) {
           />
         </View>
         <View style={styles.buttonContainer}>
-        {isSelected&&<FirstButton
-          onPress={props.onPress}
-        
-          style={styles.signUpButton}
-          buttonText={styles.signUpText}
-        >
-          Sign Up
-        </FirstButton>}
+          {isSelected && (
+            <FirstButton
+              onPress={props.onPress}
+              style={styles.signUpButton}
+              buttonText={styles.signUpText}
+            >
+              Sign Up
+            </FirstButton>
+          )}
 
-        {!isSelected&&<FirstButton
-          onPress={()=>{setError(true)}}
-
-          style={styles.disabledSignUpButton}
-          buttonText={styles.disabledText}
-        >
-          Sign Up
-        </FirstButton>}
-       {isError&&<Text style={styles.errorText}>
-          Please check the box if you want to proceed.
-        </Text>}
-
-
+          {!isSelected && (
+            <FirstButton
+              onPress={() => {
+                setError(true);
+              }}
+              style={styles.disabledSignUpButton}
+              buttonText={styles.disabledText}
+            >
+              Sign Up
+            </FirstButton>
+          )}
+          {isError && (
+            <Text style={styles.errorText}>
+              Please check the box if you want to proceed.
+            </Text>
+          )}
         </View>
 
-        <View style= {styles.loginContainer}>
-          <Text style={styles.haveAcountText}>
-          Already have account? 
-          </Text>
-        <TextButton
-          style={styles.loginButton}
-          buttonText={styles.loginText}
-          onPress={props.onPress}
-        >
-          Login
-        </TextButton>
+        <View style={styles.loginContainer}>
+          <Text style={styles.haveAcountText}>Already have account?</Text>
+          <TextButton
+            style={styles.loginButton}
+            buttonText={styles.loginText}
+            onPress={props.onPress}
+          >
+            Login
+          </TextButton>
         </View>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 }
@@ -157,7 +183,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 35,
   },
-  buttonContainer:{
+  buttonContainer: {
     marginTop: 30,
     justifyContent: "center",
     alignItems: "center",
@@ -176,7 +202,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
 
-  disabledSignUpButton:{
+  disabledSignUpButton: {
     marginTop: 20,
     borderWidth: 2,
     borderColor: "#d2c7c7",
@@ -193,33 +219,32 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 20,
   },
-  disabledText:{
+  disabledText: {
     color: "#ffffff",
     fontWeight: "700",
     fontSize: 20,
   },
 
-  errorText:{
+  errorText: {
     color: "red",
     fontWeight: "600",
-    fontSize: 15
+    fontSize: 15,
   },
-  loginContainer:{
-    marginTop: 20, 
+  loginContainer: {
+    marginTop: 20,
     flexDirection: "row",
-    justifyContent: "center"
-    
+    justifyContent: "center",
   },
-  haveAcountText:{
+  haveAcountText: {
     fontSize: 18,
     color: "white",
     fontWeight: "600",
-    paddingHorizontal: 6
+    paddingHorizontal: 6,
   },
-  loginText:{
+  loginText: {
     color: "#db0404",
     textDecorationLine: "underline",
     fontSize: 20,
     fontWeight: "600",
-  }
+  },
 });
