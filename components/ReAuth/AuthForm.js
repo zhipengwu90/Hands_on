@@ -11,7 +11,7 @@ import {
 import TextButton from "../TextButton";
 import FirstButton from "../FirstButton";
 
-import Input from "../Input";
+import Input from "./Input";
 import React, { useState } from "react";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
@@ -33,7 +33,6 @@ function AuthForm({onSubmit, credentialsInvalid, onLogin}) {
   } = credentialsInvalid;
 
   function updateInputValueHandler(inputType, enteredValue) {
-    console.log(inputType);
     switch (inputType) {
       case "username":
         setEnteredName(enteredValue);
