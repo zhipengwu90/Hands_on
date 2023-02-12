@@ -7,10 +7,10 @@ import HelperRoute from "./pages/HelperRoute";
 
 export default function App() {
   const [isLogin, setIsLogin] = useState(false);
+  //FIXME: testing, need to change isLoginReq back to false
   const [isLoginReq, setIsLoginReq] = useState(false);
   const [isLoginHelp, setIsLoginHelp] = useState(false);
   const loginHandler = (loginType) => {
-    // console.log(loginType==="Requestor")
 
     if(loginType==="Helper"){
       setIsLoginHelp(true);
@@ -23,6 +23,7 @@ export default function App() {
 
   return (
     <>
+      {/* FIXME: uncomment it */}
       {!isLogin && <Login onLogin={loginHandler}></Login>}
       {isLoginReq && <RequestorRoute />}
       {isLoginHelp && <HelperRoute />}

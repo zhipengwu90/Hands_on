@@ -1,151 +1,40 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ImageBackground,
-  SafeAreaView,
-  useWindowDimensions,
-  Button,
-} from "react-native";
-import TextButton from "../components/TextButton";
-import FirstButton from "../components/FirstButton";
+import { StyleSheet, Text, SafeAreaView } from "react-native";
+import LoadingOverlay from "../components/LoadingOverlay";
 import GlobalStyles from "../constants/GlobalStyles";
-import Input from "../components/Input";
+import { createUser } from "../util/auth";
 import React, { useState } from "react";
-import BouncyCheckbox from "react-native-bouncy-checkbox";
-import AuthContent from "../components/ReAuth/AuthContent"
 
-function SignUpRequestor(props) {
-  const [isSelected, setSelection] = useState(false);
-  const [isError, setError] = useState(false);
+import AuthContent from "../components/ReAuth/AuthContent";
 
+function SignUpRequestor({ onClose, onSignup }) {
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
+  async function signupHandler({ username, email, password }) {
+    //  console.log(username);
+    //  console.log(email);
+    //  console.log(password)
 
+    setIsAuthenticating(true);
+    await createUser(email, password);
+    setIsAuthenticating(false);
+
+    onSignup({
+      email: email,
+      password: password,
+      type: "Requestor"
+    });
+  }
+
+  if (isAuthenticating) {
+    return <LoadingOverlay message="Creating the user..." />;
+  }
 
   return (
     <SafeAreaView style={[GlobalStyles.AndroidSafeArea, styles.container]}>
-
       <AuthContent
-        onLogin = {props.onPress}
-      >
-
-      </AuthContent>
-      {/* <View>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Create A</Text>
-          <Text style={styles.title}>Requestor Account</Text>
-        </View>
-        <View style={styles.inputContainer}>
-          <Input
-            style={styles.inputContent}
-            iconName="person-outline"
-            iconColor="white"
-            
-            value={enteredName}
-            textInputConfig={{
-              placeholder: "Username",
-              autoCorrect: false,
-              color: "white",
-              placeholderTextColor: "#f7f3f3a3",
-            }}
-          />
-          <Input
-            style={styles.inputContent}
-            iconName="mail-open-outline"
-            value={enteredEmail}
-            iconColor="white"
-            textInputConfig={{
-              placeholder: "Email",
-              placeholderTextColor: "#f7f3f3a3",
-              keyboardType: "email-address",
-              autoCorrect: false,
-              color: "white",
-            }}
-          />
-          <Input
-            style={styles.inputContent}
-            value={enteredPassword}
-            iconName="lock-closed-outline"
-            iconColor="white"
-            textInputConfig={{
-              placeholder: "Password",
-              secureTextEntry: true,
-              color: "white",
-              placeholderTextColor: "#f7f3f3a3",
-            }}
-          />
-          <Input
-            style={styles.inputContent}
-            value ={enteredConfirmPassword}
-            iconName="lock-closed-outline"
-            iconColor="white"
-            textInputConfig={{
-              placeholder: "Confirm Password",
-              secureTextEntry: true,
-              color: "white",
-              placeholderTextColor: "#f7f3f3a3",
-            }}
-          />
-        </View>
-        <View style={styles.checkBox}>
-          <BouncyCheckbox
-            size={20}
-            fillColor="#000000"
-            unfillColor="#FFFFFF"
-            text="By signing up you agree to the terms of service and privacy policy"
-            textStyle={{
-              textDecorationLine: "none",
-              color: "white",
-              fontSize: 14,
-            }}
-            iconStyle={{ borderColor: "#000000", borderRadius: 0 }}
-            innerIconStyle={{ borderWidth: 1, borderRadius: 0 }}
-            onPress={() => {
-              setSelection(!isSelected);
-              setError(false);
-            }}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          {isSelected && (
-            <FirstButton
-              onPress={props.onPress}
-              style={styles.signUpButton}
-              buttonText={styles.signUpText}
-            >
-              Sign Up
-            </FirstButton>
-          )}
-
-          {!isSelected && (
-            <FirstButton
-              onPress={() => {
-                setError(true);
-              }}
-              style={styles.disabledSignUpButton}
-              buttonText={styles.disabledText}
-            >
-              Sign Up
-            </FirstButton>
-          )}
-          {isError && (
-            <Text style={styles.errorText}>
-              Please check the box if you want to proceed.
-            </Text>
-          )}
-        </View>
-
-        <View style={styles.loginContainer}>
-          <Text style={styles.haveAcountText}>Already have account?</Text>
-          <TextButton
-            style={styles.loginButton}
-            buttonText={styles.loginText}
-            onPress={props.onPress}
-          >
-            Login
-          </TextButton>
-        </View>
-      </View> */}
+        onLogin={onClose}
+        onAuthenticate={signupHandler}
+      ></AuthContent>
     </SafeAreaView>
   );
 }

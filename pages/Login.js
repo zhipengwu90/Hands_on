@@ -9,134 +9,159 @@ import {
 } from "react-native";
 import GlobalStyles from "../constants/GlobalStyles";
 import Input from "../components/Input";
-import PrimaryButton from "../components/PrimaryButton";
 import FirstButton from "../components/FirstButton";
 import React, { useState } from "react";
 import SignUpHelper from "./SignUpHelper";
 import SignUpRequestor from "./SignUpRequestor";
+import LoadingOverlay from "../components/LoadingOverlay";
+import {login} from "../util/auth.js";
+import LoginContent from "../components/LoginAuth/LoginContent";
 
 function Register(props) {
   const { height, width } = useWindowDimensions();
   const [isHelper, setIsHelper] = React.useState(false);
   const [isRequestor, setIsRequestor] = React.useState(true);
-
   const [isSignUpRequestor, setSignUpRequestor] = React.useState(false);
   const [isSignUpHelper, setSignUpHelper] = React.useState(false);
   const userTypeHelper = isHelper ? styles.HeActivated : "";
   const userTypeHelperText = isHelper ? styles.activatedText : "";
   const userTypeRequestor = isRequestor ? styles.ReActivated : "";
   const userTypeRequestorText = isRequestor ? styles.activatedText : "";
-
-  const HelperHandler =()=> {
-    props.onLogin("Helper");
-  };
-
-  const RequestorHandler =()=> {
-    props.onLogin("Requestor");
-  };
-
+  const [enteredEmail, setEnteredEmail] = useState("");
+  const [enteredPassword, setEnteredPassword] = useState("");
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const backgroundImg = isRequestor? require("../assets/img/background.png"): require("../assets/img/heBackground.png");
 
+  // const HelperHandler =()=> {
+  //   props.onLogin("Helper");
+  // };
+
+  async function loginHandler({email, password, type}) {
+    console.log(email);
+    console.log(password);
+    setIsAuthenticating(true);
+    await login(email, password);
+    setIsAuthenticating(false);
+    props.onLogin(type);
+  }
+
+  // const signupHelpHandler = ({email, password})=>{
+  //   setEnteredEmail(email);
+  //   setEnteredPassword(password);
+  //   setSignUpRequestor(false);
+  // }
+  if (isAuthenticating) {
+    return <LoadingOverlay message="Logging you in" />;
+  }
   return (
-    <ImageBackground
-      source={backgroundImg}
-      style={[styles.rootScreen, { height: height }]}
-    >
-      
-      <Modal animationType="slide" visible={isSignUpHelper}>
-        <SignUpHelper onPress={() => setSignUpHelper(false)} />
-      </Modal>
+    <LoginContent
+    onAuthenticate ={loginHandler}
+    ></LoginContent>
+    // <ImageBackground
+    //   source={backgroundImg}
+    //   style={[styles.rootScreen, { height: height }]}
+    // >
+    //   <Modal animationType="slide" visible={isSignUpHelper}>
+    //     <SignUpHelper 
+    //     onPress={() => setSignUpHelper(false)}
+    //     />
+    //   </Modal>
 
-      <Modal animationType="slide" visible={isSignUpRequestor}>
-        <SignUpRequestor onPress={() => setSignUpRequestor(false)} />
-      </Modal>
+    //   <Modal animationType="slide" visible={isSignUpRequestor}>
+    //     <SignUpRequestor onClose={() => setSignUpRequestor(false)} 
+    //     onSignup ={signupHelpHandler}
+    //     />
+    //   </Modal>
+    //   <SafeAreaView style={[{ height: height }, GlobalStyles.AndroidSafeArea]}>
+    //     <View style={[styles.loginContainer]}>
+    //       <View style={styles.loginType}>
+    //         <FirstButton
 
-      <SafeAreaView style={[{ height: height }, GlobalStyles.AndroidSafeArea]}>
-        <View style={[styles.loginContainer]}>
-          <View style={styles.loginType}>
-            <FirstButton
+    //           style={userTypeRequestor}
+    //           buttonText={userTypeRequestorText}
+    //           onPress={() => {
+    //             setIsHelper(false);
+    //             setIsRequestor(true);
+    //           }}
+    //         >
+    //           Requestor
+    //         </FirstButton>
+    //         <FirstButton
+    //           style={userTypeHelper}
+    //           buttonText={userTypeHelperText}
+    //           onPress={() => {
+    //             setIsHelper(true);
+    //             setIsRequestor(false);
+    //           }}
+    //         >
+    //           Helper
+    //         </FirstButton>
+    //       </View>
+    //       <View style={styles.inputContainer}>
+    //         <Input
+    //           style={styles.inputContent}
+    //           value={enteredEmail}
+    //           onChangeText={setEnteredEmail}
+    //           iconName="mail-open-outline"
+    //           textInputConfig={{
+    //             placeholder: "Email",
+    //             keyboardType: "email-address",
+    //             autoCorrect: false,
+    //           }}
+    //         />
 
-              style={userTypeRequestor}
-              buttonText={userTypeRequestorText}
-              onPress={() => {
-                setIsHelper(false);
-                setIsRequestor(true);
-              }}
-            >
-              Requestor
-            </FirstButton>
-            <FirstButton
-              style={userTypeHelper}
-              buttonText={userTypeHelperText}
-              onPress={() => {
-                setIsHelper(true);
-                setIsRequestor(false);
-              }}
-            >
-              Helper
-            </FirstButton>
-          </View>
-          <View style={styles.inputContainer}>
-            <Input
-              style={styles.inputContent}
-              iconName="mail-open-outline"
-              textInputConfig={{
-                placeholder: "Email",
-                keyboardType: "email-address",
-                autoCorrect: false,
-              }}
-            />
+    //         <Input
+    //           style={styles.inputContent}
+    //           iconName="lock-closed-outline"
+    //           value={enteredPassword}
+    //           onChangeText={setEnteredPassword}
+    //           textInputConfig={{
+    //             placeholder: "Password",
+    //             secureTextEntry: true,
+    //           }}
+    //         />
 
-            <Input
-              style={styles.inputContent}
-              iconName="lock-closed-outline"
-              textInputConfig={{
-                placeholder: "Password",
-                secureTextEntry: true,
-              }}
-            />
+    //         {isRequestor && (
+    //           <FirstButton
+    //             onPress={loginReHandler}
+    //             style={styles.ReLoginButton}
+    //             buttonText={styles.ReLoginText}
+    //           >
+    //             LOGIN
+    //           </FirstButton>
+    //         )}
+    //         {isHelper && (
+    //           <FirstButton
 
-            {isRequestor && (
-              <FirstButton
-                onPress={RequestorHandler}
-                style={styles.ReLoginButton}
-                buttonText={styles.ReLoginText}
-              >
-                LOGIN
-              </FirstButton>
-            )}
-            {isHelper && (
-              <FirstButton
+    //             onPress={HelperHandler}
+    //             style={styles.HeLoginButton}
+    //             buttonText={styles.HeLoginText}
+    //           >
+    //             LOGIN
+    //           </FirstButton>
+    //         )}
 
-                onPress={HelperHandler}
-                style={styles.HeLoginButton}
-                buttonText={styles.HeLoginText}
-              >
-                LOGIN
-              </FirstButton>
-            )}
-
-            <Text style={styles.forgotPass}>Forgot Password?</Text>
-          </View>
-        </View>
-        <View style={styles.signupContainer}>
-          <FirstButton
-            style={styles.signupStyle}
-            buttonText={[styles.signupText, styles.reSignupText]}
-            onPress={() => setSignUpRequestor(true)}
-          >
-            Sign up as a Requestor
-          </FirstButton>
-          <FirstButton
-            style={styles.signupStyle}
-            buttonText={[styles.signupText, styles.heSignupText]}
-            onPress={() => setSignUpHelper(true)}
-          >
-            Sign up as a Helper
-          </FirstButton>
-        </View>
-      </SafeAreaView>
-    </ImageBackground>
+    //         <Text style={styles.forgotPass}>Forgot Password?</Text>
+    //       </View>
+    //     </View>
+    //     <View style={styles.signupContainer}>
+    //       <FirstButton
+    //         style={styles.signupStyle}
+    //         buttonText={[styles.signupText, styles.reSignupText]}
+    //         onPress={() => setSignUpRequestor(true)}
+    //       >
+    //         Sign up as a Requestor
+    //       </FirstButton>
+    //       <FirstButton
+    //         style={styles.signupStyle}
+    //         buttonText={[styles.signupText, styles.heSignupText]}
+    //         onPress={() => setSignUpHelper(true)}
+    //       >
+    //         Sign up as a Helper
+    //       </FirstButton>
+    //     </View>
+    //   </SafeAreaView>
+    // </ImageBackground>
   );
 }
 
@@ -245,10 +270,12 @@ const styles = StyleSheet.create({
   },
   reSignupText: {
     fontSize: 17,
+    fontWeight:"600",
     color: "#008c8c",
   },
   heSignupText:{
     fontSize: 17,
+    fontWeight:"600",
     color: "#D35D5D",
   }
 });

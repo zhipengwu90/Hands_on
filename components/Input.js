@@ -39,7 +39,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   inputInvalid: {
-    backgroundColor: '#f13b3b',
-    width: "90%"
+
+    width: "90%",
+    fontSize: 22,
   },
 });

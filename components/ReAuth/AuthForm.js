@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   useWindowDimensions,
   Button,
-  TextInput
+  TextInput,
 } from "react-native";
 import TextButton from "../TextButton";
 import FirstButton from "../FirstButton";
@@ -15,26 +15,25 @@ import Input from "./Input";
 import React, { useState } from "react";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
-function AuthForm({onSubmit, credentialsInvalid, onLogin}) {
+function AuthForm({ onSubmit, credentialsInvalid, onLogin }) {
   const [isSelected, setSelection] = useState(false);
   const [isError, setError] = useState(false);
 
-  const [enteredName, setEnteredName] = useState('');
-  const [enteredEmail, setEnteredEmail] = useState('');
-  const [enteredPassword, setEnteredPassword] = useState('');
-  const [enteredConfirmPassword, setEnteredConfirmPassword] = useState('');
-
+  const [enteredName, setEnteredName] = useState("");
+  const [enteredEmail, setEnteredEmail] = useState("");
+  const [enteredPassword, setEnteredPassword] = useState("");
+  const [enteredConfirmPassword, setEnteredConfirmPassword] = useState("");
 
   const {
     email: emailIsInvalid,
-    username: usernameIsValid,
+    name: nameIsValid,
     password: passwordIsInvalid,
     confirmPassword: passwordsDontMatch,
   } = credentialsInvalid;
 
   function updateInputValueHandler(inputType, enteredValue) {
     switch (inputType) {
-      case "username":
+      case "name":
         setEnteredName(enteredValue);
         break;
       case "email":
@@ -50,10 +49,8 @@ function AuthForm({onSubmit, credentialsInvalid, onLogin}) {
   }
 
   function submitHandler() {
-
-
     onSubmit({
-      username: enteredName,
+      name: enteredName,
       email: enteredEmail,
       password: enteredPassword,
       confirmPassword: enteredConfirmPassword,
@@ -67,21 +64,26 @@ function AuthForm({onSubmit, credentialsInvalid, onLogin}) {
         <Text style={styles.title}>Requestor Account</Text>
       </View>
       <View style={styles.inputContainer}>
-
         <Input
           style={styles.inputContent}
           iconName="person-outline"
           iconColor="white"
-          onChangeText={updateInputValueHandler.bind(this, 'username')}
+          onChangeText={updateInputValueHandler.bind(this, "name")}
           value={enteredName}
-          isInvalid={usernameIsValid}
+          isInvalid={nameIsValid}
           textInputConfig={{
-            placeholder: "Username",
+            placeholder: "name",
             autoCorrect: false,
             color: "white",
             placeholderTextColor: "#f7f3f3a3",
           }}
         />
+        {nameIsValid && (
+          <Text style={styles.errorText}>
+            name cannot be empty.
+          </Text>
+        )}
+
         <Input
           style={styles.inputContent}
           iconName="mail-open-outline"
@@ -97,6 +99,11 @@ function AuthForm({onSubmit, credentialsInvalid, onLogin}) {
             color: "white",
           }}
         />
+        {emailIsInvalid && (
+          <Text style={styles.errorText}>
+            Please enter a valid email address.
+          </Text>
+        )}
         <Input
           style={styles.inputContent}
           value={enteredPassword}
@@ -111,6 +118,11 @@ function AuthForm({onSubmit, credentialsInvalid, onLogin}) {
             placeholderTextColor: "#f7f3f3a3",
           }}
         />
+        {passwordIsInvalid && (
+          <Text style={styles.errorText}>
+            Password must be more than 7 characters!
+          </Text>
+        )}
         <Input
           style={styles.inputContent}
           onChangeText={updateInputValueHandler.bind(this, "confirmPassword")}
@@ -125,6 +137,9 @@ function AuthForm({onSubmit, credentialsInvalid, onLogin}) {
             placeholderTextColor: "#f7f3f3a3",
           }}
         />
+        {passwordsDontMatch && (
+          <Text style={styles.errorText}>Password doesn't match</Text>
+        )}
       </View>
       <View style={styles.checkBox}>
         <BouncyCheckbox
@@ -215,7 +230,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ffffff",
     borderBottomWidth: 1,
 
-    marginBottom: 20,
+    marginTop: 10,
   },
   checkBox: {
     width: "100%",
@@ -264,9 +279,10 @@ const styles = StyleSheet.create({
   },
 
   errorText: {
-    color: "red",
+    color: "#d40202",
     fontWeight: "600",
     fontSize: 15,
+    alignSelf: "center",
   },
   loginContainer: {
     marginTop: 20,

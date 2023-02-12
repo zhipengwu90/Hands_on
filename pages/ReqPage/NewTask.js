@@ -6,20 +6,28 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert
 } from "react-native";
+import { useState, useCallback } from "react";
 import ViewButton from "../../components/ViewButton";
 import GlobalStyles from "../../constants/GlobalStyles";
 import { Ionicons } from "@expo/vector-icons";
 import NewTaskInput from "../../components/NewTaskInput";
 import FirstButton from "../../components/FirstButton";
+import DropDownPicker from "react-native-dropdown-picker";
+import { useForm, Controller } from "react-hook-form";
+import NewTaskForm from "../../components/NewTaskForm";
+
 
 function NewTask(props) {
+ 
+
   return (
     <KeyboardAvoidingView
       behavior="padding"
       style={[styles.container, GlobalStyles.IosSafeArea]}
     >
-      <ScrollView style={{ flex: 1 }}>
+      {/* <ScrollView style={{ flex: 1 }}> */}
         <View style={styles.header}>
           <ViewButton onPress={props.onPress}>
             <Ionicons name="chevron-back" size={28} color="black" />
@@ -28,8 +36,9 @@ function NewTask(props) {
             <Text style={styles.headerText}>New Task</Text>
           </View>
         </View>
+        <NewTaskForm onClick={props.onPress}/>
 
-        <NewTaskInput
+        {/* <NewTaskInput
           style={styles.inputContent}
           label="Task Title"
           textInputConfig={{
@@ -53,6 +62,9 @@ function NewTask(props) {
             keyboardType: "default",
           }}
         />
+
+
+
         <NewTaskInput
           style={styles.inputContent}
           label="Scheduled At"
@@ -89,8 +101,8 @@ function NewTask(props) {
           >
             Cancel
           </FirstButton>
-        </View>
-      </ScrollView>
+        </View> */}
+      {/* </ScrollView> */}
     </KeyboardAvoidingView>
   );
 }
@@ -100,7 +112,7 @@ export default NewTask;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F0F0F0",
+    backgroundColor: "#ffffff",
   },
   header: {
     flexDirection: "row",
