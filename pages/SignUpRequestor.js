@@ -1,28 +1,73 @@
-import { StyleSheet, Text, SafeAreaView } from "react-native";
+import { StyleSheet, Text, SafeAreaView, Alert } from "react-native";
 import LoadingOverlay from "../components/LoadingOverlay";
 import GlobalStyles from "../constants/GlobalStyles";
 import { createUser } from "../util/auth";
 import React, { useState } from "react";
+import Toast from "react-native-root-toast";
+import { collection, addDoc, doc, setDoc } from "firebase/firestore";
+import { db } from "../util/firebaseConfig";
 
 import AuthContent from "../components/ReAuth/AuthContent";
 
 function SignUpRequestor({ onClose, onSignup }) {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  async function signupHandler({ username, email, password }) {
-    //  console.log(username);
-    //  console.log(email);
-    //  console.log(password)
-
+  function signupHandler({ name, email, password }) {
     setIsAuthenticating(true);
-    await createUser(email, password);
-    setIsAuthenticating(false);
 
-    onSignup({
-      email: email,
-      password: password,
-      type: "Requestor"
-    });
+    createUser(name, email, password)
+      .then((respondData) => {
+        setIsAuthenticating(false);
+        onSignup({
+          email: email,
+          password: password,
+          type: "Requestor",
+        });
+        return respondData;
+      })
+      .then((respondData) => {
+        Toast.show(
+          `${name}, you're officially a member of Hands On family, Please log in to your account`,
+          {
+            duration: 2500,
+            position: 60,
+            backgroundColor: "#07897c",
+            shadow: true,
+            animation: true,
+            opacity: 1,
+          }
+        );
+        const { email: userEmail, localId: uid } = respondData;
+
+        const data = {
+          email: userEmail,
+          name: name,
+          localId: uid,
+          type: "Requestor",
+        };
+        try {
+          const collectionRef = doc(collection(doc(db, 'requestData', 'userList'), "allUsers"), uid);
+
+          const docRef = setDoc(collectionRef, data);
+        } catch (err) {
+          console.log(err);
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 400) {
+          Alert.alert(
+            "Authentication failed",
+            `An account with Email ${email} already exists`
+          );
+        } else {
+          Alert.alert(
+            "Authentication failed",
+            "Could not create user, please check your input and try again"
+          );
+        }
+
+        setIsAuthenticating(false);
+      });
   }
 
   if (isAuthenticating) {

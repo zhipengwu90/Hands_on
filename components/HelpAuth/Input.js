@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
   
   },
   inputInvalid: {
-
     width: "90%",
     fontSize: 22,
     

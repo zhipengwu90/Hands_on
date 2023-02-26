@@ -3,8 +3,13 @@ import GlobalStyles from "../../constants/GlobalStyles";
 import TaskData from "../../data/dummy-data.js";
 import ViewButton from "../../components/ViewButton";
 import Task from "../../components/Task";
+import React, { useContext, useEffect } from "react";
+import { ItemDataContext } from "../../store/data-context";
+
 function TaskPageCompleted({navigation}) {
-  let NewTaskData = TaskData.filter((item) => item.isCompleted === true);
+
+    const dataCtx = useContext(ItemDataContext);
+  let NewTaskData = dataCtx.itemData.filter((item) => item.isCompleted === true);
 
 
     function renderCategoryItem(itemData) {
@@ -18,10 +23,10 @@ function TaskPageCompleted({navigation}) {
           <ViewButton onPress={pressHandler}>
             <Task
               title={itemData.item.title}
-              status={itemData.item.status}
+              status="completed"
               date={itemData.item.date}
               price={itemData.item.price}
-              category={itemData.item.category}
+              category={itemData.item.taskType}
             />
           </ViewButton>
         );
@@ -32,11 +37,12 @@ function TaskPageCompleted({navigation}) {
   return (
     <SafeAreaView >
         <View style={styles.container}>
-        <FlatList
-        data={NewTaskData}
-        keyExtractor={(item) => item.id}
-        renderItem={renderCategoryItem}
-      />
+        {NewTaskData.length? <FlatList
+          data={NewTaskData}
+          keyExtractor={(item) => item.id}
+          renderItem={renderCategoryItem}
+          style={{}}
+        /> : <Text style={{textAlign: 'center', fontSize: 20, marginTop: 20}}>There is no task.</Text>}
       </View>
     </SafeAreaView>
   );

@@ -2,7 +2,7 @@ import {Text, View, Alert} from "react-native";
 import LoginForm from "./LoginForm";
 import { useState } from 'react';
 
-function LoginContent({onAuthenticate}){
+function LoginContent({onAuthenticate,tryEnteredEmail}){
   const [credentialsInvalid, setCredentialsInvalid] = useState({
     email: false,
     password: false,

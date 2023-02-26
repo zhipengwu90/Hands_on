@@ -1,17 +1,77 @@
-import { View, Text, SafeAreaView, StyleSheet, Image, FlatList, Modal, } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  Image,
+  FlatList,
+  Modal,
+} from "react-native";
 import Task from "../../components/Task";
 import GlobalStyles from "../../constants/GlobalStyles";
-import TaskData from "../../data/dummy-data.js";
 import TextButton from "../../components/TextButton";
 import ViewButton from "../../components/ViewButton";
 import { Entypo } from "@expo/vector-icons";
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from "react";
 import NewTask from "./NewTask";
+import { AuthContext } from "../../store/auth-context";
+import { ItemDataContext } from "../../store/data-context";
+import Toast from "react-native-root-toast";
+
+import { db } from '../../util/firebaseConfig';
+import { collection, getDocs, onSnapshot, query, orderBy, doc,where } from "firebase/firestore";
 
 function Home({ navigation }) {
-  const [newTask, setNewTask] = React.useState(false);
-  let NewTaskData = TaskData.filter((item) => item.isCompleted === false);
+  const authCtx = useContext(AuthContext);
+  const uid = authCtx.respondData.localId;
+  const dataCtx = useContext(ItemDataContext);
+  async function getData() {
+    try {
+      const collectionRef = collection(doc(db, 'requestData', 'taskList'), "allTasks");
 
+      const unsubscribe = onSnapshot(query(collectionRef, where("uid", "==", uid), orderBy("date", "desc")),
+      (querySnapshot) => {
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          title: doc.data().taskTitle,
+          status: doc.data().status,
+          date: doc.data().date.toDate().toLocaleString(), 
+          price: doc.data().price,
+          taskType: doc.data().taskType,
+          isCompleted: doc.data().isCompleted,
+          description: doc.data().description,
+          address: doc.data().address,
+          estHour: doc.data().estHour,
+          phone: doc.data().phone,
+          uid: doc.data().uid,
+          name: doc.data().name,
+          helperId: doc.data().helperId,
+          helperName: doc.data().helperName,
+          isAccepted: doc.data().isAccepted,
+        }));
+        dataCtx.setItemData(data);
+      });
+      return unsubscribe;
+    } catch (err) {
+      console.log(err);
+      Toast.show('An error has occurred, please try again', {
+        duration: 1300,
+        position: Toast.positions.CENTER,
+        backgroundColor: '#680808',
+        shadow: true,
+        animation: true,
+        opacity: 1,
+    });
+    }
+  }
+  
+  useEffect(() => {
+    getData();
+    return () => {};
+  }, []);
+
+  const [newTask, setNewTask] = React.useState(false);
+  let NewTaskData = dataCtx.itemData.filter((item) => item.isCompleted === false && item.status !== "Cancelled");
   function renderCategoryItem(itemData) {
     function pressHandler() {
       navigation.navigate("Details", {
@@ -26,7 +86,7 @@ function Home({ navigation }) {
           status={itemData.item.status}
           date={itemData.item.date}
           price={itemData.item.price}
-          category={itemData.item.category}
+          category={itemData.item.taskType}
         />
       </ViewButton>
     );
@@ -34,12 +94,8 @@ function Home({ navigation }) {
 
   return (
     <SafeAreaView style={GlobalStyles.AndroidSafeArea}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={newTask}
-      >
-        <NewTask onPress={()=>setNewTask(false)}/>
+      <Modal animationType="slide" transparent={false} visible={newTask}>
+        <NewTask onPress={() => setNewTask(false)} />
       </Modal>
       <View style={styles.bannerContainer}>
         <View style={styles.bannerText}>
@@ -62,14 +118,14 @@ function Home({ navigation }) {
         </TextButton>
       </View>
       <View style={styles.taskList}>
-        <FlatList
+        {NewTaskData.length? <FlatList
           data={NewTaskData}
           keyExtractor={(item) => item.id}
           renderItem={renderCategoryItem}
           style={{}}
-        />
+        /> : <Text style={{textAlign: 'center', fontSize: 20, marginTop: 20}}>There is no task.</Text>}
       </View>
-      <ViewButton style={styles.addTask} onPress={()=> setNewTask(true)} >
+      <ViewButton style={styles.addTask} onPress={() => setNewTask(true)}>
         <Entypo name="new-message" size={40} color="#008c8c" />
       </ViewButton>
     </SafeAreaView>

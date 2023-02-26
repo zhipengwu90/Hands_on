@@ -1,108 +1,74 @@
 import {
   View,
   Text,
-  SafeAreaView,
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert
+  ToastAndroid,
 } from "react-native";
 import { useState, useCallback } from "react";
 import ViewButton from "../../components/ViewButton";
 import GlobalStyles from "../../constants/GlobalStyles";
 import { Ionicons } from "@expo/vector-icons";
-import NewTaskInput from "../../components/NewTaskInput";
-import FirstButton from "../../components/FirstButton";
-import DropDownPicker from "react-native-dropdown-picker";
-import { useForm, Controller } from "react-hook-form";
 import NewTaskForm from "../../components/NewTaskForm";
-
+import { db } from "../../util/firebaseConfig";
+import { collection, addDoc, doc } from "firebase/firestore"; 
+import { useContext } from "react";
+import { AuthContext } from "../../store/auth-context";
+import Toast from 'react-native-root-toast';
 
 function NewTask(props) {
- 
+  const authCtx = useContext(AuthContext);
+  const uid= authCtx.respondData.localId;
+
+
+// You can manually hide the Toast, or it will automatically disappear after a `duration` ms timeout.
+
+  const onSubmitHandler=async(data)=> {
+
+    const collectionRef = collection(doc(db, 'requestData', 'taskList'), "allTasks");
+    try {
+      const docRef = await addDoc(collectionRef, data);
+  
+      props.onPress();
+      Toast.show('Your new task has been updated successfully.', {
+        duration: 1800,
+        position: Toast.positions.CENTER,
+        backgroundColor: '#08685e',
+        shadow: true,
+        animation: true,
+        opacity: 1,
+    });
+    } catch (e) {
+      props.onPress();
+      Toast.show('An error has occurred, please try again', {
+        duration: 1300,
+        position: Toast.positions.CENTER,
+        backgroundColor: '#680808',
+        shadow: true,
+        animation: true,
+        opacity: 1,
+    });
+    }
+  }
 
   return (
     <KeyboardAvoidingView
-      behavior="padding"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={[styles.container, GlobalStyles.IosSafeArea]}
     >
-      {/* <ScrollView style={{ flex: 1 }}> */}
+      <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
-          <ViewButton onPress={props.onPress}>
-            <Ionicons name="chevron-back" size={28} color="black" />
-          </ViewButton>
+       <ViewButton style={styles.backClose} onPress={props.onPress}>
+          <Ionicons name="close-circle-outline" size={35} color="#be0707" />
+        </ViewButton>
           <View style={styles.headerTextBox}>
             <Text style={styles.headerText}>New Task</Text>
           </View>
         </View>
-        <NewTaskForm onClick={props.onPress}/>
-
-        {/* <NewTaskInput
-          style={styles.inputContent}
-          label="Task Title"
-          textInputConfig={{
-            placeholder: "eg. Mow the yard",
-            keyboardType: "default",
-          }}
-        />
-        <NewTaskInput
-          style={styles.inputContent}
-          label="Total Price"
-          textInputConfig={{
-            placeholder: "Price",
-            keyboardType: "numeric",
-          }}
-        />
-        <NewTaskInput
-          style={styles.inputContent}
-          label="Task Type"
-          textInputConfig={{
-            placeholder: "Choose your task type",
-            keyboardType: "default",
-          }}
-        />
-
-
-
-        <NewTaskInput
-          style={styles.inputContent}
-          label="Scheduled At"
-          textInputConfig={{
-            placeholder: "Address",
-            keyboardType: "default",
-          }}
-        />
-        <NewTaskInput
-          style={styles.inputContent}
-          label="Address"
-          textInputConfig={{
-            placeholder: "Address",
-            keyboardType: "default",
-          }}
-        />
-        <NewTaskInput
-          style={styles.description}
-          label="Task Description"
-          textInputConfig={{
-            placeholder: "Your task details",
-            keyboardType: "default",
-            multiline: true,
-          }}
-        />
-        <View style={styles.buttonBox}>
-          <FirstButton style={styles.submit} buttonText={styles.submitText}>
-            Submit
-          </FirstButton>
-          <FirstButton
-            onPress={props.onPress}
-            style={styles.cancel}
-            buttonText={styles.cancelText}
-          >
-            Cancel
-          </FirstButton>
-        </View> */}
-      {/* </ScrollView> */}
+        <NewTaskForm onClick={props.onPress} onSubmit={onSubmitHandler} />
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -114,21 +80,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
   },
+  backClose: {
+    position: "absolute",
+
+    
+    right: 20,
+    zIndex: 100,
+  },
   header: {
     flexDirection: "row",
 
     marginTop: 40,
-
   },
   headerText: {
     fontSize: 30,
     color: "#008c8c",
     fontWeight: "600",
+    
   },
-  headerTextBox:{
-
-    width: "83%",
-    alignItems: "center"
+  headerTextBox: {
+  
+    width: "100%",
+    alignItems: "center",
   },
 
   buttonBox: {

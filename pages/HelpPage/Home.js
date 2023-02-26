@@ -9,16 +9,77 @@ import {
 } from "react-native";
 import Task from "../../components/Task";
 import GlobalStyles from "../../constants/GlobalStyles";
-import TaskData from "../../data/dummy-data.js";
 import TextButton from "../../components/TextButton";
 import ViewButton from "../../components/ViewButton";
 import { Entypo } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
+import { AuthContext } from "../../store/auth-context";
+import { ItemDataContext } from "../../store/data-context";
+import Toast from "react-native-root-toast";
+
+import { db } from '../../util/firebaseConfig';
+import { collection, getDocs, onSnapshot, query, orderBy,doc, where, } from "firebase/firestore";
 
 
 function Home({ navigation }) {
+  const authCtx = useContext(AuthContext);
+  const dataCtx = useContext(ItemDataContext);
+  const uid = authCtx.respondData.localId;
+  
+  async function getData() {
+    try {
+      const collectionRef = collection(doc(db, 'requestData', 'taskList'), "allTasks");
 
-  let NewTaskData = TaskData.filter((item) => item.isCompleted === false);
+      const unsubscribe = onSnapshot(query(collectionRef, orderBy("date", "desc")),
+      (querySnapshot) => {
+        
+        const data = querySnapshot.docs.map((doc) => ({
+          
+          id: doc.id,
+          title: doc.data().taskTitle,
+          status: doc.data().status,
+          date: doc.data().date.toDate().toLocaleString(), 
+          price: doc.data().price,
+          taskType: doc.data().taskType,
+          isCompleted: doc.data().isCompleted,
+          description: doc.data().description,
+          address: doc.data().address,
+          estHour: doc.data().estHour,
+          phone: doc.data().phone,
+          uid: doc.data().uid,
+          name: doc.data().name,
+          isAccepted: doc.data().isAccepted,
+          helperId: doc.data().helperId,
+
+        })).filter((item) => item.helperId === uid || item.status === "Posted");
+        dataCtx.setItemData(data);
+      });
+      return unsubscribe;
+    } catch (err) {
+      console.log(err);
+      Toast.show('An error has occurred, please try again', {
+        duration: 1300,
+        position: Toast.positions.CENTER,
+        backgroundColor: '#680808',
+        shadow: true,
+        animation: true,
+        opacity: 1,
+    });
+    }
+  }
+  
+  useEffect(() => {
+    getData();
+    return () => {};
+  }, []);
+
+
+
+
+
+
+
+  let taskData = dataCtx.itemData.filter((item) => item.isCompleted === false);
 
   function renderCategoryItem(itemData) {
     function pressHandler() {
@@ -34,7 +95,7 @@ function Home({ navigation }) {
           status={itemData.item.status}
           date={itemData.item.date}
           price={itemData.item.price}
-          category={itemData.item.category}
+          category={itemData.item.taskType}
         />
       </ViewButton>
     );
@@ -64,12 +125,11 @@ function Home({ navigation }) {
         </TextButton>
       </View>
       <View style={styles.taskList}>
-        <FlatList
-          data={NewTaskData}
+      {taskData.length? <FlatList
+          data={taskData}
           keyExtractor={(item) => item.id}
           renderItem={renderCategoryItem}
-          style={{}}
-        />
+        /> : <Text style={{textAlign: 'center', fontSize: 20, marginTop: 20}}>There is no task.</Text>}
       </View>
 
     </SafeAreaView>

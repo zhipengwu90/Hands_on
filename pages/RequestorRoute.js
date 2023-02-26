@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image, Platform } from "react-native";
+import {  LogBox } from "react-native";
 import { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -13,6 +13,7 @@ import Profile from "./ReqPage/Profile";
 import { NavigationContainer } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import Details from "./ReqPage/Details";
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const TopTab = createMaterialTopTabNavigator();
@@ -88,7 +89,11 @@ function TasksDetail() {
   );
 }
 
-function RequestorRoute() {
+function RequestorRoute(props) {
+  LogBox.ignoreLogs([
+    'Non-serializable values were found in the navigation state',
+  ]);
+
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -137,11 +142,16 @@ function RequestorRoute() {
         <Tab.Screen
           name="Profile"
           component={Profile}
+          initialParams={{ onLogout: props.onLogout }}
+
           options={{
             headerShown: false,
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="people-outline" size={26} color={color} />
             ),
+        
+            
+         
           }}
         />
       </Tab.Navigator>

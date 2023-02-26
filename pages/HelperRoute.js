@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image,Platform } from "react-native";
+import { LogBox } from "react-native";
 import { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -88,7 +88,10 @@ function TasksDetail() {
   );
 }
 
-function RequestorRoute() {
+function HelperRoute(props) {
+  LogBox.ignoreLogs([
+    'Non-serializable values were found in the navigation state',
+  ]);
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -135,6 +138,7 @@ function RequestorRoute() {
         />
         <Tab.Screen
           name="Profile"
+          initialParams={{ onLogout: props.onLogout }}
           component={Profile}
           options={{
             headerShown: false,
@@ -149,4 +153,4 @@ function RequestorRoute() {
   );
 }
 
-export default RequestorRoute;
+export default HelperRoute;

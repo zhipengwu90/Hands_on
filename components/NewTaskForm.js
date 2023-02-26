@@ -1,9 +1,28 @@
-import { Text, View, TextInput, Button, Alert, StyleSheet } from "react-native";
+import {
+  Text,
+  View,
+  TextInput,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import FirstButton from "./FirstButton";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useContext} from "react";
 import DropDownPicker from "react-native-dropdown-picker";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import API_KEY from "../util/mapKey";
+import PhoneInput from "react-native-phone-input";
+import countriesList from '../data/countriesList';
+import { AuthContext } from "../store/auth-context";
+
 function NewTaskForm(props) {
+  const authCtx = useContext(AuthContext);
+  const uid = authCtx.respondData.localId;
+  const name = authCtx.respondData.displayName;
+
+
+
+  let currentTime = new Date();
   const {
     control,
     handleSubmit,
@@ -13,33 +32,40 @@ function NewTaskForm(props) {
       taskTitle: "",
       price: "",
       taskType: "",
-      scheduled: "",
+      estHour: "",
+      phone: "",
       address: "",
       description: "",
+      date: currentTime,
+      isCompleted: false,
+      status: 'Posted',
+      uid: uid,
+      name: name, 
+
     },
   });
 
   const onSubmitHandler = (data) => {
-    console.log(data);
+    props.onSubmit(data);
   };
-
-  const [genderOpen, setGenderOpen] = useState(false);
-  const [genderValue, setGenderValue] = useState(null);
-  const [gender, setGender] = useState([
-    { label: "Male", value: "male" },
-    { label: "Female", value: "female" },
-    { label: "Prefer Not to Say", value: "neutral" },
+  const [typeOpen, setTypeOpen] = useState(false);
+  const [typeValue, setTypeValue] = useState(null);
+  const [items, setItems] = useState([
+    { label: "Handyman", value: "Handyman" },
+    { label: "Delivery", value: "Delivery" },
+    { label: "Moving Service", value: "Moving Service" },
+    { label: "IT Service", value: "IT Service" },
+    { label: "Personal Assistant", value: "Personal Assistant"},
   ]);
-  const onGenderOpen = useCallback(() => {
-    setCompanyOpen(false);
-  }, []);
 
-
+  
   return (
     <View style={styles.container}>
+      
       <Text style={styles.label}>Task Title</Text>
       <Controller
         control={control}
+        
         rules={{
           required: true,
         }}
@@ -49,12 +75,13 @@ function NewTaskForm(props) {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
+            maxLength = {40}
           />
         )}
         name="taskTitle"
       />
       {errors.taskTitle && <Text style={styles.error}>This is required.</Text>}
-      <Text style={styles.label}>Task Price</Text>
+      <Text style={styles.label}>Task Price CAD</Text>
       <Controller
         control={control}
         rules={{
@@ -66,45 +93,130 @@ function NewTaskForm(props) {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
-            keyboardType= "numeric"
+            keyboardType="numeric"
+            
           />
         )}
         name="price"
       />
       {errors.price && <Text style={styles.error}>This is required.</Text>}
-
-      <Text style={styles.label}>Gender</Text>
-      <Controller
-        name="gender"
-        defaultValue=""
-        control={control}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View style={styles.dropdownGender}>
-            <DropDownPicker
-              style={styles.dropdown}
-              open={genderOpen}
-              value={genderValue} //genderValue
-              items={gender}
+      <Text style={styles.label}>Estimated Hour(s)</Text>
+        <Controller
+          control={control}
+    
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              style={styles.input}
               onBlur={onBlur}
-              setOpen={setGenderOpen}
-              setValue={setGenderValue}
-              setItems={setGender}
-              placeholder="Select Gender"
+              onChangeText={onChange}
+              value={value}
+              keyboardType="numeric"
+            />
+          )}
+          name="estHour"
+        />
+
+
+      <Text style={styles.label}>Phone Number</Text>
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+      
+        render={({ field: { onChange, onBlur, value } }) => (
+        <View style={styles.input}>
+        <PhoneInput
+          autoFormat={true}
+          // onPressFlag={this.onPressFlag}
+          countriesList={countriesList}
+          initialCountry={"ca"}
+          initialValue=""
+          value={value}
+          onChangePhoneNumber={onChange}
+        />
+      </View>
+        )}
+        name="phone"
+      />
+      {errors.phone && <Text style={styles.error}>This is required.</Text>}
+      
+
+      <Text style={styles.label}>Task Type</Text>
+      <Controller
+        name="taskType"
+        rules={{
+          required: true,
+        }}
+        control={control}
+        render={({ field: { onChange, value } }) => (
+          <View style={styles.dropdownContainer}>
+            <DropDownPicker
+              listMode="SCROLLVIEW"
+              style={styles.dropdown}
+              open={typeOpen}
+              value={typeValue} //companyValue
+              items={items}
+              setOpen={setTypeOpen}
+              setValue={setTypeValue}
+              setItems={setItems}
+              placeholder="Select Type"
               placeholderStyle={styles.placeholderStyles}
-              onOpen={onGenderOpen}
+              // onOpen={onCompanyOpen}
               onChangeValue={onChange}
-              zIndex={3000}
-              zIndexInverse={1000}
             />
           </View>
         )}
       />
+      {errors.taskType && <Text style={styles.error}>This is required.</Text>}
 
+      <Text style={styles.label}>Task Address</Text>
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value } }) => (
+   
+            <ScrollView
+              horizontal
+              contentContainerStyle={{ flex: 1, width: "100%"}}
+              keyboardShouldPersistTaps="handled"
+              style={styles.address}
+            >
+              <GooglePlacesAutocomplete
+                listViewDisplayed={false}
+                enablePoweredByContainer={false}
+                value={value}
+                placeholder=""
+                onPress={(data, details = null) => {
+                  onChange(data.description);
+                }}
+                query={{
+                  key: API_KEY,
+                  language: "en",
+                  components: 'country:ca',
+                }}
+              />
+            </ScrollView>
+       
+        )}
+        name="address"
+      />
 
+      {errors.address && <Text style={styles.error}>This is required.</Text>}
 
-
-
-
+      <Text style={styles.label}>Description</Text>
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style={styles.multiline}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            multiline
+          />
+        )}
+        name="description"
+      />
 
       <View style={styles.buttonBox}>
         <FirstButton
@@ -123,7 +235,6 @@ function NewTaskForm(props) {
         </FirstButton>
       </View>
 
-      {/* <Button title="Submit" onPress={handleSubmit(onSubmitHandler)} /> */}
     </View>
   );
 }
@@ -135,7 +246,56 @@ const styles = StyleSheet.create({
   input: {
     marginHorizontal: 30,
     padding: 8,
+    paddingVertical: 12,
     fontSize: 18,
+    borderWidth: 1,
+    borderColor: "#008c8c",
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    shadowColor: "black",
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 1,
+    elevation: 1,
+  },
+
+  address: {
+    marginHorizontal: 30,
+
+    paddingVertical: 1,
+    fontSize: 18,
+    borderWidth: 1,
+    borderColor: "#008c8c",
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    shadowColor: "black",
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 1,
+    elevation: 1,
+  },
+  multiline: {
+    padding: 8,
+    textAlignVertical: "top",
+    height: 150,
+    marginHorizontal: 30,
+    paddingVertical: 12,
+    fontSize: 18,
+    borderWidth: 1,
+    borderColor: "#008c8c",
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    shadowColor: "black",
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 1,
+    elevation: 1,
+  },
+  dropdownContainer: {
+    marginHorizontal: 30,
+    zIndex: 1000,
+  },
+  dropdown: {
     borderWidth: 1,
     borderColor: "#008c8c",
     backgroundColor: "#ffffff",

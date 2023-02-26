@@ -5,7 +5,11 @@ import {
   ImageBackground,
   SafeAreaView,
   useWindowDimensions,
+  TouchableWithoutFeedback,
+  Keyboard,
   Modal,
+  KeyboardAvoidingView,
+  Platform
 } from "react-native";
 import GlobalStyles from "../../constants/GlobalStyles";
 import Input from "../Input";
@@ -15,6 +19,7 @@ import SignUpHelper from "../../pages/SignUpHelper";
 import SignUpRequestor from "../../pages/SignUpRequestor";
 import LoadingOverlay from "../LoadingOverlay";
 import { login } from "../../util/auth.js";
+
 
 function LoginForm({credentialsInvalid, onSubmit}) {
   const { height, width } = useWindowDimensions();
@@ -88,7 +93,7 @@ function LoginForm({credentialsInvalid, onSubmit}) {
       style={[styles.rootScreen, { height: height }]}
     >
       <Modal animationType="slide" visible={isSignUpHelper}>
-        <SignUpHelper onPress={() => setSignUpHelper(false)} 
+        <SignUpHelper onClose={() => setSignUpHelper(false)} 
           onSignup={signupHelperHandler}
         />
       
@@ -100,7 +105,12 @@ function LoginForm({credentialsInvalid, onSubmit}) {
           onSignup={signupReHandler}
         />
       </Modal>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}  accessible={false}>
+      
       <SafeAreaView style={[{ height: height }, GlobalStyles.AndroidSafeArea]}>
+      <KeyboardAvoidingView style = {{flex: 1}}  behavior={Platform.OS === 'ios' ? '' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -200}
+      >
         <View style={[styles.loginContainer]}>
           <View style={styles.loginType}>
             <FirstButton
@@ -128,7 +138,7 @@ function LoginForm({credentialsInvalid, onSubmit}) {
             <Input
               style={styles.inputContent}
               isInvalid={emailIsInvalid}
-              value={enteredEmail}
+              value={enteredEmail }
               onChangeText={updateInputValueHandler.bind(this, "email")}
               iconName="mail-open-outline"
               textInputConfig={{
@@ -198,7 +208,9 @@ function LoginForm({credentialsInvalid, onSubmit}) {
             Sign up as a Helper
           </FirstButton>
         </View>
+      </KeyboardAvoidingView>
       </SafeAreaView>
+        </TouchableWithoutFeedback>
     </ImageBackground>
   );
 }

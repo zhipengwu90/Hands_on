@@ -1,35 +1,90 @@
 import {
   View,
   Text,
-  SafeAreaView,
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { useState, useCallback,useContext } from "react";
 import ViewButton from "../../components/ViewButton";
 import GlobalStyles from "../../constants/GlobalStyles";
 import { Ionicons } from "@expo/vector-icons";
-import NewTaskInput from "../../components/NewTaskInput";
-import FirstButton from "../../components/FirstButton";
+import ModifiedTaskForm from "../../components/ModifiedTaskForm";
+import { db } from "../../util/firebaseConfig";
+import { collection, updateDoc, doc } from "firebase/firestore"; 
+import Toast from 'react-native-root-toast';
+import { AuthContext } from "../../store/auth-context";
+
 
 function ModifiedTask(props) {
+  const authCtx = useContext(AuthContext);
+  const uid= authCtx.respondData.localId;
+
+
+  
+
+  const datahandler = async(data, id) => {
+    try {
+      const docRef = doc(collection(doc(db, 'requestData', 'taskList'), "allTasks"), id);
+      await updateDoc(docRef, 
+        {
+
+            "taskTitle": data.taskTitle,
+            "price": data.price,
+            "taskType": data.taskType,
+            "description": data.description,
+            "address": data.address,
+            "estHour": data.estHour,
+            "phone": data.phone,
+        }
+        
+        ); // update the document with new data
+      props.onPress();
+      Toast.show("Your task has been updated successfully.", {
+      duration: 1300,
+      position: Toast.positions.CENTER,
+      backgroundColor: "#08685e",
+      shadow: true,
+      animation: true,
+      opacity: 1,
+      });
+      } catch (e) {
+        props.onPress();
+      Toast.show("An error has occurred, please try again", {
+      duration: 2000,
+      position: Toast.positions.CENTER,
+      backgroundColor: "#ab0808",
+      shadow: true,
+      animation: true,
+      opacity: 1,
+     
+      });
+      }
+  };
+
   return (
     <KeyboardAvoidingView
-      behavior="padding"
-      style={[styles.container, GlobalStyles.IosSafeArea]}
-    >
-      <ScrollView style={{ flex: 1 }}>
+    behavior="padding"
+    style={[styles.container, GlobalStyles.IosSafeArea]}
+  >
+  <ScrollView style={{ flex: 1 }} 
+   keyboardShouldPersistTaps="handled">
+
         <View style={styles.header}>
-          <ViewButton onPress={props.onPress}>
-            <Ionicons name="chevron-back" size={28} color="black" />
-          </ViewButton>
+        <ViewButton style={styles.backClose} onPress={props.onPress}>
+          <Ionicons name="close-circle-outline" size={35} color="#be0707" />
+        </ViewButton>
           <View style={styles.headerTextBox}>
             <Text style={styles.headerText}>Update Task</Text>
           </View>
         </View>
+        <ModifiedTaskForm  onPress={props.onPress}
+        taskData = {props.taskData}
+        modifieddData = {datahandler}
+        />
 
-        <NewTaskInput
+        {/* <NewTaskInput
           style={styles.inputContent}
           label="Task Title"
           textInputConfig={{
@@ -89,7 +144,7 @@ function ModifiedTask(props) {
           >
             Cancel
           </FirstButton>
-        </View>
+        </View> */}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -100,7 +155,12 @@ export default ModifiedTask;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F0F0F0",
+    backgroundColor: "#ffffff", 
+   },
+   backClose: {
+    position: "absolute",
+    right: 20,
+    zIndex: 100,
   },
   header: {
     flexDirection: "row",
@@ -115,7 +175,7 @@ const styles = StyleSheet.create({
   },
   headerTextBox:{
 
-    width: "83%",
+    width: "100%",
     alignItems: "center"
   },
 
