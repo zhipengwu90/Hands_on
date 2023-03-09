@@ -23,7 +23,7 @@ function NewTask(props) {
   const uid= authCtx.respondData.localId;
 
 
-// You can manually hide the Toast, or it will automatically disappear after a `duration` ms timeout.
+
 
   const onSubmitHandler=async(data)=> {
 

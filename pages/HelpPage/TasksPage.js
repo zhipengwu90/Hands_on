@@ -35,7 +35,7 @@ function TasksPage({navigation}) {
 
     
   return (
-    <SafeAreaView>
+   
         <View style={styles.container}>
         {TaskData.length? <FlatList
           data={TaskData}
@@ -44,7 +44,7 @@ function TasksPage({navigation}) {
           style={{}}
         /> : <Text style={{textAlign: 'center', fontSize: 20, marginTop: 20}}>There is no task.</Text>}
       </View>
-    </SafeAreaView>
+
   );
 }
 
@@ -53,6 +53,7 @@ export default TasksPage;
 const styles = StyleSheet.create({
     container: {
         paddingTop: 10,
+        flex: 1,
     },
 
 

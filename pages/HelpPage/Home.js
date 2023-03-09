@@ -50,6 +50,7 @@ function Home({ navigation }) {
           name: doc.data().name,
           isAccepted: doc.data().isAccepted,
           helperId: doc.data().helperId,
+          isReviewed: doc.data().isHelperReviewed,
 
         })).filter((item) => item.helperId === uid || item.status === "Posted");
         dataCtx.setItemData(data);
@@ -80,6 +81,7 @@ function Home({ navigation }) {
 
 
   let taskData = dataCtx.itemData.filter((item) => item.isCompleted === false);
+
 
   function renderCategoryItem(itemData) {
     function pressHandler() {

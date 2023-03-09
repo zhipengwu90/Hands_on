@@ -13,7 +13,10 @@ import Toast from "react-native-root-toast";
 import { Ionicons } from "@expo/vector-icons";
 import ViewButton from "../../components/ViewButton";
 import Task from "../../components/Task";
-
+import { NavigationContainer } from "@react-navigation/native";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import Comments from "../../components/Comments";
+import ViewTasksReq from "../../components/ViewTasksReq";
 import { db } from "../../util/firebaseConfig";
 import {
   collection,
@@ -29,66 +32,36 @@ function ViewUser(props) {
   const authCtx = useContext(AuthContext);
   const viewUserUid = props.viewUserInfo;
   const [userInfo, setUserInfo] = useState([]);
-  const [taskList, setTaskList] = useState([]);
-  function renderCategoryItem(itemData) {
-    // function pressHandler() {
-    //   navigation.navigate("Details", {
-    //     id: itemData.item.id,
-    //   });
-    // }
-
-    return (
-      // <ViewButton onPress={pressHandler}>
-      <Task
-        title={itemData.item.title}
-        status={itemData.item.status}
-        date={itemData.item.date}
-        price={itemData.item.price}
-        category={itemData.item.taskType}
-      />
-      // </ViewButton>
-    );
-  }
+  const [taskListLength, setTaskListLength] = useState();
+  const TopTab = createMaterialTopTabNavigator();
 
   async function getUserInfo() {
     try {
-      const docRef = doc(
+      const docRef = await doc(
         collection(doc(db, "requestData", "userList"), "allUsers"),
         viewUserUid
       );
+
+      const docSnap = await getDoc(docRef);
+      setUserInfo(docSnap.data());
       const collectionRef = collection(
         doc(db, "requestData", "taskList"),
         "allTasks"
       );
-      const docSnap = await getDoc(docRef);
-      setUserInfo(docSnap.data());
+      const unsubscribe = onSnapshot(
+        query(
+          collectionRef,
+          where("isCompleted", "==", true),
+          where("helperId", "==", viewUserUid),
+          orderBy("date", "desc")
+        ),
+        (querySnapshot) => {
+          const data = querySnapshot.docs;
+          setTaskListLength(data.length);
+        }
+      );
 
-      // const unsubscribe = onSnapshot(
-      //   query(
-      //     collectionRef,
-      //     where("uid", "==", viewUserUid),
-      //     orderBy("date", "desc")
-      //   ),
-      //   (querySnapshot) => {
-      //     const data = querySnapshot.docs.map((doc) => ({
-      //       id: doc.id,
-      //       title: doc.data().taskTitle,
-      //       status: doc.data().status,
-      //       date: doc.data().date.toDate().toLocaleString(),
-      //       price: doc.data().price,
-      //       taskType: doc.data().taskType,
-      //       isCompleted: doc.data().isCompleted,
-      //       description: doc.data().description,
-      //       address: doc.data().address,
-      //       estHour: doc.data().estHour,
-      //       phone: doc.data().phone,
-      //       uid: doc.data().uid,
-      //       name: doc.data().name,
-      //     }));
-      //     setTaskList(data);
-      //   }
-      // );
-      // return unsubscribe;
+      return docRef;
     } catch (err) {
       console.log(err);
       Toast.show("An error has occurred, please try again", {
@@ -126,7 +99,7 @@ function ViewUser(props) {
         </View>
         <View style={styles.infoBox}>
           <View style={styles.taskBox}>
-            <Text style={styles.number}>10</Text>
+            <Text style={styles.number}>{taskListLength}</Text>
             <Text style={styles.infoText}>Total Tasks</Text>
           </View>
           <View style={styles.rateBox}>
@@ -141,22 +114,20 @@ function ViewUser(props) {
           </View>
         </View>
       </View>
-     
-      <View style={styles.taskList}>
-        <Text style={styles.TaskListTitle}>His Tasks</Text>
-        {taskList.length ? (
-          <FlatList
-            data={taskList}
-            keyExtractor={(item) => item.id}
-            renderItem={renderCategoryItem}
-            style={{}}
+      <NavigationContainer independent={true}>
+        <TopTab.Navigator>
+          <TopTab.Screen
+            name="Tasks"
+            component={ViewTasksReq}
+            initialParams={{ viewUserUid: viewUserUid }}
           />
-        ) : (
-          <Text style={{ textAlign: "center", fontSize: 20, marginTop: 20 }}>
-            There is no task.
-          </Text>
-        )}
-      </View>
+          <TopTab.Screen
+            name="Comments"
+            component={Comments}
+            initialParams={{ viewUserUid: viewUserUid }}
+          />
+        </TopTab.Navigator>
+      </NavigationContainer>
     </View>
   );
 }
@@ -183,10 +154,6 @@ const styles = StyleSheet.create({
   bannerImg: {
     width: "100%",
     position: "absolute",
-    shadowColor: "black",
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 10,
   },
   userProfile: {
     alignSelf: "center",
@@ -237,11 +204,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
   },
-  TaskListTitle:{
+  TaskListTitle: {
     fontSize: 20,
     fontWeight: "bold",
     marginLeft: 20,
     marginVertical: 5,
-
-  }
+  },
 });

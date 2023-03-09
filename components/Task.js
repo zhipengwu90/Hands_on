@@ -8,47 +8,55 @@ import {
 } from "react-native";
 import GlobalStyles from "../constants/GlobalStyles";
 import TaskIconFinder from "./TaskIconFinder";
+import { Octicons } from "@expo/vector-icons";
 
 const Task = (props) => {
+  const taskStatus = props.status;
+  const isReqReviewed = props.isReviewed;
+  const isCancelledContainer =
+    taskStatus === "Cancelled"
+      ? styles.taskContainerCancelled
+      : styles.taskContainer;
+  // const isCancelled = taskStatus === "Cancelled"? styles.taskStatusCancelled : styles.taskStatus;
+  // const isPending = taskStatus === "Pending"? styles.taskStatusPending : styles.taskStatus;
+  // const isAccepted = taskStatus === "Accepted"? styles.taskStatusAccepted : styles.taskStatus;
+  // const isPosted = taskStatus === "Posted"&& styles.taskStatus;
 
-
-  const isCancelledContainer = props.status === "Cancelled"? styles.taskContainerCancelled : styles.taskContainer;
-  // const isCancelled = props.status === "Cancelled"? styles.taskStatusCancelled : styles.taskStatus;
-  // const isPending = props.status === "Pending"? styles.taskStatusPending : styles.taskStatus;
-  // const isAccepted = props.status === "Accepted"? styles.taskStatusAccepted : styles.taskStatus;
-  // const isPosted = props.status === "Posted"&& styles.taskStatus;
-
- 
-
-const status =()=>{
-  if(props.status === "Cancelled"){
-    return styles.taskStatusCancelled;
-  }else if(props.status === "Pending"){
-    return styles.taskStatusPending;
-  }else if(props.status === "Accepted"){
-    return styles.taskStatusAccepted;
-  }else if(props.status === "Posted"){
-    return styles.taskStatus;
-  }else{
-    return styles.taskStatus;
-  }
-}
+  const status = () => {
+    if (taskStatus === "Cancelled") {
+      return styles.taskStatusCancelled;
+    } else if (taskStatus === "Pending") {
+      return styles.taskStatusPending;
+    } else if (taskStatus === "Accepted") {
+      return styles.taskStatusAccepted;
+    } else if (taskStatus === "Posted") {
+      return styles.taskStatus;
+    } else {
+      return styles.taskStatus;
+    }
+  };
 
   return (
     <View style={isCancelledContainer}>
       <View>
-      
         <Image
           source={TaskIconFinder(props.category)}
           style={styles.taskIcon}
         />
       </View>
       <View style={styles.taskBox}>
+        {taskStatus === "Completed" && !isReqReviewed && (
+          <View style={styles.reviewBox}>
+            <Octicons name="dot-fill" size={15} color={"#f26461ff"} />
+            <Text style={styles.review}>Review</Text>
+          </View>
+        )}
+
         <Text style={styles.taskTitle}>{props.title}</Text>
         <Text style={styles.taskDate}>{props.date}</Text>
         <View style={styles.taskLine}>
           <Text style={styles.taskPrice}>${props.price}</Text>
-          <Text style={status()}>⦿{props.status}</Text>
+          <Text style={status()}>⦿{taskStatus}</Text>
         </View>
       </View>
     </View>
@@ -96,7 +104,20 @@ const styles = StyleSheet.create({
     height: 100,
     justifyContent: "space-evenly",
   },
-
+  reviewBox: {
+    position: "absolute",
+    flexDirection: "row",
+    alignItems: "center",
+    top: 8,
+    right: 10,
+    // transform: [{ rotate: '40deg'}]
+  },
+  review: {
+    color: "#f26461ff",
+    fontWeight: "bold",
+    fontSize: 14,
+    marginLeft: 2,
+  },
 
   taskTitle: {
     fontSize: 16,
@@ -137,5 +158,4 @@ const styles = StyleSheet.create({
     color: "#000000",
     fontWeight: "bold",
   },
-
 });

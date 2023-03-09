@@ -23,10 +23,11 @@ function TaskPageCompleted({navigation}) {
           <ViewButton onPress={pressHandler}>
             <Task
               title={itemData.item.title}
-              status="completed"
+              status={itemData.item.status}
               date={itemData.item.date}
               price={itemData.item.price}
               category={itemData.item.taskType}
+              isReviewed={itemData.item.isReviewed}
             />
           </ViewButton>
         );
@@ -35,7 +36,7 @@ function TaskPageCompleted({navigation}) {
 
     
   return (
-    <SafeAreaView >
+
         <View style={styles.container}>
         {NewTaskData.length? <FlatList
           data={NewTaskData}
@@ -44,7 +45,7 @@ function TaskPageCompleted({navigation}) {
           style={{}}
         /> : <Text style={{textAlign: 'center', fontSize: 20, marginTop: 20}}>There is no task.</Text>}
       </View>
-    </SafeAreaView>
+    
   );
 }
 
@@ -53,6 +54,7 @@ export default TaskPageCompleted;
 const styles = StyleSheet.create({
     container: {
         paddingTop: 10,
+        flex: 1,
     },
 
 

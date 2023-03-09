@@ -48,6 +48,7 @@ function Home({ navigation }) {
           helperId: doc.data().helperId,
           helperName: doc.data().helperName,
           isAccepted: doc.data().isAccepted,
+          isReviewed: doc.data().isReqReviewed,
         }));
         dataCtx.setItemData(data);
       });

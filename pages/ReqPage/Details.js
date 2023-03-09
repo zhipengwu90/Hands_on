@@ -22,13 +22,14 @@ import Toast from "react-native-root-toast";
 import { Ionicons } from "@expo/vector-icons";
 import { AuthContext } from "../../store/auth-context";
 import ViewUser from "./ViewUser";
-
+import RateUser from "./RateUser";
 const windowHeight = Dimensions.get("window").height;
 
 function Details({ route, navigation }) {
   const dataCtx = useContext(ItemDataContext);
 
   const { id } = route.params;
+  const [rateUser, setRateUser] = useState(false);
   const [viewUser, setViewUser] = useState(false);
   const selectedTask = dataCtx.itemData.find((item) => item.id === id);
   const [update, setUpdate] = React.useState(false);
@@ -37,6 +38,7 @@ function Details({ route, navigation }) {
   const isAccepted = selectedTask.status === "Accepted";
   const isCancelled = selectedTask.status === "Cancelled";
   const isCompleted = selectedTask.isCompleted;
+  const isReviewed = selectedTask.isReviewed;
   const helperId = selectedTask.helperId;
   const helperName = selectedTask.helperName;
   const collectionRef = doc(
@@ -247,6 +249,13 @@ function Details({ route, navigation }) {
       <Modal animationType="slide" transparent={false} visible={viewUser}>
         <ViewUser viewUserInfo={helperId} onPress={() => setViewUser(false)} />
       </Modal>
+      <Modal animationType="slide" transparent={false} visible={rateUser}>
+          <RateUser
+            viewUserInfo={helperId}
+            taskId={id}
+            onPress={() => setRateUser(false)}
+          />
+        </Modal>
       <View style={styles.container}>
         <View style={styles.topTitle}>
           <Image
@@ -376,6 +385,18 @@ function Details({ route, navigation }) {
             <Text style={styles.nameButtonSubText}>
               completed this task for you.
             </Text>
+            {isReviewed?<FirstButton
+                style={styles.rateButton}
+                buttonText={styles.rateText}
+              >
+                See your review
+              </FirstButton>:<FirstButton
+                style={styles.rateButton}
+                onPress={() => setRateUser(true)}
+                buttonText={styles.rateText}
+              >
+                Please rate the user
+              </FirstButton>}
           </View>
         )}
       </View>
@@ -520,5 +541,20 @@ const styles = StyleSheet.create({
   nameButtonText: {
     fontSize: 16,
     fontWeight: "700",
+  },
+  rateButton: {
+    backgroundColor: "#D35D5D",
+    marginTop: 30,
+    alignSelf: "center",
+    justifyContent: "center",
+    borderRadius: 25,
+
+  },
+  rateText: {
+    padding: 5,
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "700",
+    textAlign: "center",
   },
 });

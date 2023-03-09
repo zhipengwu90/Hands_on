@@ -38,16 +38,16 @@ function TasksOnProcess({navigation}) {
 
     
   return (
-    <SafeAreaView>
+   
         <View style={styles.container}>
         {taskData.length? <FlatList
           data={taskData}
           keyExtractor={(item) => item.id}
           renderItem={renderCategoryItem}
-          style={{}}
+          style={styles.myFlatList}
         /> : <Text style={{textAlign: 'center', fontSize: 20, marginTop: 20}}>There is no task.</Text>}
       </View>
-    </SafeAreaView>
+
   );
 }
 
@@ -56,6 +56,8 @@ export default TasksOnProcess;
 const styles = StyleSheet.create({
     container: {
         paddingTop: 10,
+        flex: 1,
+
     },
 
 
