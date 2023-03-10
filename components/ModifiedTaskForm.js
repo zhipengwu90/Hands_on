@@ -4,6 +4,7 @@ import {
     TextInput,
     StyleSheet,
     ScrollView,
+    Platform
   } from "react-native";
   import { useForm, Controller } from "react-hook-form";
   import FirstButton from "./FirstButton";
@@ -182,6 +183,7 @@ import {
                   listViewDisplayed={false}
                   enablePoweredByContainer={false}
                   value={value}
+                  
                   onPress={(data, details = null) => {
                     onChange(data.description);
                   }}

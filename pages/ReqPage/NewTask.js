@@ -7,69 +7,71 @@ import {
   Platform,
   ToastAndroid,
 } from "react-native";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import ViewButton from "../../components/ViewButton";
 import GlobalStyles from "../../constants/GlobalStyles";
 import { Ionicons } from "@expo/vector-icons";
 import NewTaskForm from "../../components/NewTaskForm";
 import { db } from "../../util/firebaseConfig";
-import { collection, addDoc, doc } from "firebase/firestore"; 
+import { collection, addDoc, doc } from "firebase/firestore";
 import { useContext } from "react";
 import { AuthContext } from "../../store/auth-context";
-import Toast from 'react-native-root-toast';
+import Toast from "react-native-root-toast";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 function NewTask(props) {
-  const authCtx = useContext(AuthContext);
-  const uid= authCtx.respondData.localId;
-
-
-
-
-  const onSubmitHandler=async(data)=> {
-
-    const collectionRef = collection(doc(db, 'requestData', 'taskList'), "allTasks");
+  const onSubmitHandler = async (data) => {
+    const collectionRef = collection(
+      doc(db, "requestData", "taskList"),
+      "allTasks"
+    );
     try {
       const docRef = await addDoc(collectionRef, data);
-  
+
       props.onPress();
-      Toast.show('Your new task has been updated successfully.', {
+      Toast.show("Your new task has been updated successfully.", {
         duration: 1800,
         position: Toast.positions.CENTER,
-        backgroundColor: '#08685e',
+        backgroundColor: "#08685e",
         shadow: true,
         animation: true,
         opacity: 1,
-    });
+      });
     } catch (e) {
       props.onPress();
-      Toast.show('An error has occurred, please try again', {
+      Toast.show("An error has occurred, please try again", {
         duration: 1300,
         position: Toast.positions.CENTER,
-        backgroundColor: '#680808',
+        backgroundColor: "#680808",
         shadow: true,
         animation: true,
         opacity: 1,
-    });
+      });
     }
-  }
+  };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={[styles.container, GlobalStyles.IosSafeArea]}
+    <KeyboardAwareScrollView
+    extraScrollHeight= {155}
+    enableOnAndroid={true}
+    style={styles.container}
+    keyboardShouldPersistTaps="handled"
     >
-      <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
+
+
+
+      <ScrollView style={{ flex: 1 }}  keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
-       <ViewButton style={styles.backClose} onPress={props.onPress}>
-          <Ionicons name="close-circle-outline" size={35} color="#be0707" />
-        </ViewButton>
+          <ViewButton style={styles.backClose} onPress={props.onPress}>
+            <Ionicons name="close-circle-outline" size={35} color="#be0707" />
+          </ViewButton>
           <View style={styles.headerTextBox}>
             <Text style={styles.headerText}>New Task</Text>
           </View>
         </View>
         <NewTaskForm onClick={props.onPress} onSubmit={onSubmitHandler} />
       </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -78,12 +80,12 @@ export default NewTask;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+  
+    marginTop: Platform.OS === "ios" ? 10 : 0,
   },
   backClose: {
     position: "absolute",
 
-    
     right: 20,
     zIndex: 100,
   },
@@ -96,10 +98,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "#008c8c",
     fontWeight: "600",
-    
   },
   headerTextBox: {
-  
     width: "100%",
     alignItems: "center",
   },

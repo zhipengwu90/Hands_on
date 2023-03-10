@@ -37,6 +37,7 @@ function TasksPage({ navigation }) {
           date={itemData.item.date}
           price={itemData.item.price}
           category={itemData.item.taskType}
+          isReviewed={itemData.item.isReviewed}
         />
       </ViewButton>
     );

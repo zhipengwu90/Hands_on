@@ -6,6 +6,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useState, useCallback,useContext } from "react";
 import ViewButton from "../../components/ViewButton";
 import GlobalStyles from "../../constants/GlobalStyles";
@@ -64,10 +66,11 @@ function ModifiedTask(props) {
   };
 
   return (
-    <KeyboardAvoidingView
-    behavior="padding"
-    style={[styles.container, GlobalStyles.IosSafeArea]}
-  >
+    <KeyboardAwareScrollView
+    extraScrollHeight= {155}
+    enableOnAndroid={true}
+    style={styles.container}
+    >
   <ScrollView style={{ flex: 1 }} 
    keyboardShouldPersistTaps="handled">
 
@@ -83,70 +86,8 @@ function ModifiedTask(props) {
         taskData = {props.taskData}
         modifieddData = {datahandler}
         />
-
-        {/* <NewTaskInput
-          style={styles.inputContent}
-          label="Task Title"
-          textInputConfig={{
-            placeholder: "eg. Mow the yard",
-            keyboardType: "default",
-          }}
-        />
-        <NewTaskInput
-          style={styles.inputContent}
-          label="Total Price"
-          textInputConfig={{
-            placeholder: "Price",
-            keyboardType: "numeric",
-          }}
-        />
-        <NewTaskInput
-          style={styles.inputContent}
-          label="Task Type"
-          textInputConfig={{
-            placeholder: "Choose your task type",
-            keyboardType: "default",
-          }}
-        />
-        <NewTaskInput
-          style={styles.inputContent}
-          label="Scheduled At"
-          textInputConfig={{
-            placeholder: "Date Time",
-            keyboardType: "default",
-          }}
-        />
-        <NewTaskInput
-          style={styles.inputContent}
-          label="Address"
-          textInputConfig={{
-            placeholder: "Address",
-            keyboardType: "default",
-          }}
-        />
-        <NewTaskInput
-          style={styles.description}
-          label="Task Description"
-          textInputConfig={{
-            placeholder: "Your task details",
-            keyboardType: "default",
-            multiline: true,
-          }}
-        />
-        <View style={styles.buttonBox}>
-          <FirstButton style={styles.submit} buttonText={styles.submitText}>
-            Save
-          </FirstButton>
-          <FirstButton
-            onPress={props.onPress}
-            style={styles.cancel}
-            buttonText={styles.cancelText}
-          >
-            Cancel
-          </FirstButton>
-        </View> */}
       </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -155,7 +96,7 @@ export default ModifiedTask;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff", 
+    marginTop: 20,
    },
    backClose: {
     position: "absolute",

@@ -12,7 +12,7 @@ import { Octicons } from "@expo/vector-icons";
 
 const Task = (props) => {
   const taskStatus = props.status;
-  const isReqReviewed = props.isReviewed;
+  const isReviewed = props.isReviewed;
   const isCancelledContainer =
     taskStatus === "Cancelled"
       ? styles.taskContainerCancelled
@@ -21,7 +21,6 @@ const Task = (props) => {
   // const isPending = taskStatus === "Pending"? styles.taskStatusPending : styles.taskStatus;
   // const isAccepted = taskStatus === "Accepted"? styles.taskStatusAccepted : styles.taskStatus;
   // const isPosted = taskStatus === "Posted"&& styles.taskStatus;
-
   const status = () => {
     if (taskStatus === "Cancelled") {
       return styles.taskStatusCancelled;
@@ -45,7 +44,7 @@ const Task = (props) => {
         />
       </View>
       <View style={styles.taskBox}>
-        {taskStatus === "Completed" && !isReqReviewed && (
+        {taskStatus === "Completed" && !isReviewed && (
           <View style={styles.reviewBox}>
             <Octicons name="dot-fill" size={15} color={"#f26461ff"} />
             <Text style={styles.review}>Review</Text>

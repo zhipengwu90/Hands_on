@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 import Toast from "react-native-root-toast";
 
 
-function ViewTasksReq({route}) {
+function ViewTasksReq(props) {
 
-    const viewUserUid = route.params.viewUserUid;
+    const {viewUserUid} = props;
 
     const [taskList, setTaskList] = useState([]);
     async function getUserInfo() {
@@ -42,6 +42,7 @@ function ViewTasksReq({route}) {
                 name: doc.data().name,
               }));
               setTaskList(data);
+              props.taskListLength(data.length);
             }
           );
           return unsubscribe;
@@ -63,6 +64,11 @@ function ViewTasksReq({route}) {
         return () => {};
       }, []);
 
+     
+
+
+
+
     function renderCategoryItem(itemData) {
         // function pressHandler() {
         //   navigation.navigate("Details", {
@@ -78,6 +84,7 @@ function ViewTasksReq({route}) {
             date={itemData.item.date}
             price={itemData.item.price}
             category={itemData.item.taskType}
+            isReviewed={true}
           />
           // </ViewButton>
         );

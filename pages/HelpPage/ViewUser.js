@@ -33,12 +33,15 @@ function ViewUser(props) {
   const [userInfo, setUserInfo] = useState([]);
   const [taskListLength, setTaskListLength] = useState();
   const TopTab = createMaterialTopTabNavigator();
+  const [score, setScore] = useState();
 
   async function getUserInfo() {
     try {
-      const docRef = doc(collection(doc(db, "requestData", "userList"), "allUsers"),viewUserUid);
+      const docRef = doc(
+        collection(doc(db, "requestData", "userList"), "allUsers"),
+        viewUserUid
+      );
 
-        
       const docSnap = await getDoc(docRef);
       setUserInfo(docSnap.data());
       const collectionRef = collection(
@@ -51,10 +54,10 @@ function ViewUser(props) {
           where("uid", "==", viewUserUid),
           orderBy("date", "desc")
         ),
-        (querySnapshot) => {
-          const data = querySnapshot.docs;
-          setTaskListLength(data.length);
-        }
+        // (querySnapshot) => {
+        //   const data = querySnapshot.docs;
+        //   setTaskListLength(data.length);
+        // }
       );
 
       return getDoc;
@@ -75,6 +78,8 @@ function ViewUser(props) {
     getUserInfo();
     return () => {};
   }, []);
+
+
 
   return (
     <View style={styles.container}>
@@ -100,11 +105,12 @@ function ViewUser(props) {
           </View>
           <View style={styles.rateBox}>
             <View style={styles.scoreBox}>
-              <Text style={styles.number}>4.0/5.0</Text>
-              <Image
+            <Image
                 source={require("../../assets/img/star.png")}
                 style={styles.star}
               />
+              <Text style={styles.number}>{score? `${Number(score).toFixed(1)}/5.0`:'N/A' }</Text>
+
             </View>
             <Text style={styles.infoText}>Rating</Text>
           </View>
@@ -112,16 +118,24 @@ function ViewUser(props) {
       </View>
       <NavigationContainer independent={true}>
         <TopTab.Navigator>
-          <TopTab.Screen
-            name="Tasks"
-            component={ViewTasks}
-            initialParams={{ viewUserUid: viewUserUid }}
-          />
-          <TopTab.Screen name="Comments" component={Comments} 
-                      initialParams={{ viewUserUid: viewUserUid }}
-          
-          
-          />
+        <TopTab.Screen name="Tasks">
+            {(props) => (
+              <ViewTasks
+                {...props}
+                taskListLength={(el) => setTaskListLength(el)}
+                viewUserUid={viewUserUid}
+              />
+            )}
+          </TopTab.Screen>
+          <TopTab.Screen name="Comments">
+            {(props) => (
+              <Comments
+                {...props}
+                score={(el) => setScore(el)}
+                viewUserUid={viewUserUid}
+              />
+            )}
+          </TopTab.Screen>
         </TopTab.Navigator>
       </NavigationContainer>
     </View>

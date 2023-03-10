@@ -240,7 +240,7 @@ function Details({ route, navigation }) {
 
   return (
     <ScrollView>
-      <Modal animationType="slide" transparent={true} visible={update}>
+      <Modal animationType="slide" transparent={false} visible={update}>
         <ModifiedTask
           onPress={() => setUpdate(false)}
           taskData={selectedTask}

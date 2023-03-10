@@ -1,26 +1,18 @@
-import {
-  Text,
-  View,
-  TextInput,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { Text, View, TextInput, StyleSheet, ScrollView, Platform } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import FirstButton from "./FirstButton";
-import { useState, useCallback, useContext} from "react";
+import { useState, useCallback, useRef, useContext } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import API_KEY from "../util/mapKey";
 import PhoneInput from "react-native-phone-input";
-import countriesList from '../data/countriesList';
+import countriesList from "../data/countriesList";
 import { AuthContext } from "../store/auth-context";
 
 function NewTaskForm(props) {
   const authCtx = useContext(AuthContext);
   const uid = authCtx.respondData.localId;
   const name = authCtx.respondData.displayName;
-
-
 
   let currentTime = new Date();
   const {
@@ -38,10 +30,9 @@ function NewTaskForm(props) {
       description: "",
       date: currentTime,
       isCompleted: false,
-      status: 'Posted',
+      status: "Posted",
       uid: uid,
-      name: name, 
-
+      name: name,
     },
   });
 
@@ -55,17 +46,14 @@ function NewTaskForm(props) {
     { label: "Delivery", value: "Delivery" },
     { label: "Moving Service", value: "Moving Service" },
     { label: "IT Service", value: "IT Service" },
-    { label: "Personal Assistant", value: "Personal Assistant"},
+    { label: "Personal Assistant", value: "Personal Assistant" },
   ]);
 
-  
   return (
     <View style={styles.container}>
-      
       <Text style={styles.label}>Task Title</Text>
       <Controller
         control={control}
-        
         rules={{
           required: true,
         }}
@@ -75,7 +63,7 @@ function NewTaskForm(props) {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
-            maxLength = {40}
+            maxLength={40}
           />
         )}
         name="taskTitle"
@@ -94,28 +82,25 @@ function NewTaskForm(props) {
             onChangeText={onChange}
             value={value}
             keyboardType="numeric"
-            
           />
         )}
         name="price"
       />
       {errors.price && <Text style={styles.error}>This is required.</Text>}
       <Text style={styles.label}>Estimated Hour(s)</Text>
-        <Controller
-          control={control}
-    
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              keyboardType="numeric"
-            />
-          )}
-          name="estHour"
-        />
-
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style={styles.input}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            keyboardType="numeric"
+          />
+        )}
+        name="estHour"
+      />
 
       <Text style={styles.label}>Phone Number</Text>
       <Controller
@@ -123,24 +108,23 @@ function NewTaskForm(props) {
         rules={{
           required: true,
         }}
-      
         render={({ field: { onChange, onBlur, value } }) => (
-        <View style={styles.input}>
-        <PhoneInput
-          autoFormat={true}
-          // onPressFlag={this.onPressFlag}
-          countriesList={countriesList}
-          initialCountry={"ca"}
-          initialValue=""
-          value={value}
-          onChangePhoneNumber={onChange}
-        />
-      </View>
+          <View style={styles.input}>
+            <PhoneInput
+              autoFormat={true}
+              // onPressFlag={this.onPressFlag}
+              countriesList={countriesList}
+              initialCountry={"ca"}
+              initialValue=""
+              value={value}
+              onChangePhoneNumber={onChange}
+            />
+          </View>
         )}
         name="phone"
       />
+
       {errors.phone && <Text style={styles.error}>This is required.</Text>}
-      
 
       <Text style={styles.label}>Task Type</Text>
       <Controller
@@ -174,29 +158,27 @@ function NewTaskForm(props) {
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
-   
-            <ScrollView
-              horizontal
-              contentContainerStyle={{ flex: 1, width: "100%"}}
-              keyboardShouldPersistTaps="handled"
-              style={styles.address}
-            >
-              <GooglePlacesAutocomplete
-                listViewDisplayed={false}
-                enablePoweredByContainer={false}
-                value={value}
-                placeholder=""
-                onPress={(data, details = null) => {
-                  onChange(data.description);
-                }}
-                query={{
-                  key: API_KEY,
-                  language: "en",
-                  components: 'country:ca',
-                }}
-              />
-            </ScrollView>
-       
+          <ScrollView
+            horizontal
+            contentContainerStyle={{ flex: 1, width: "100%" }}
+            keyboardShouldPersistTaps="handled"
+            style={styles.address}
+          >
+            <GooglePlacesAutocomplete
+              listViewDisplayed={false}
+              enablePoweredByContainer={false}
+              value={value}
+              placeholder=""
+              onPress={(data, details = null) => {
+                onChange(data.description);
+              }}
+              query={{
+                key: API_KEY,
+                language: "en",
+                components: "country:ca",
+              }}
+            />
+          </ScrollView>
         )}
         name="address"
       />
@@ -217,6 +199,10 @@ function NewTaskForm(props) {
         )}
         name="description"
       />
+      <Text style={styles.invisible}>
+        {" "}
+        * Phone number and address are invisible until help is approved.
+      </Text>
 
       <View style={styles.buttonBox}>
         <FirstButton
@@ -234,7 +220,6 @@ function NewTaskForm(props) {
           Cancel
         </FirstButton>
       </View>
-
     </View>
   );
 }
@@ -352,5 +337,11 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
     marginHorizontal: 30,
+  },
+  invisible: {
+    color: "red",
+    width: "80%",
+    marginTop: 10,
+    alignSelf: "center",
   },
 });

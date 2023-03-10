@@ -54,7 +54,7 @@ function Details({ route }) {
     const isCancelled = selectedTask.status === "Cancelled";
     const isCompleted = selectedTask.isCompleted;
     const isReviewed = selectedTask.isReviewed;
-  
+
     
     
     const postUserUid = selectedTask.uid;

@@ -13,9 +13,10 @@ import {
 } from "firebase/firestore";
 import Toast from "react-native-root-toast";
 
-function Comments({ route }) {
-  const { viewUserUid } = route.params;
+function Comments(props) {
+  const { viewUserUid } = props;
   const [comments, setComments] = useState([]);
+
   async function getComments() {
     try {
       const collectionRef = collection(
@@ -35,7 +36,6 @@ function Comments({ route }) {
           date: doc.data().date.toDate().toLocaleString(),
         }));
         setComments(data);
-        console.log(data);
       });
 
       return unsubscribe;
@@ -56,6 +56,17 @@ function Comments({ route }) {
     getComments();
     return () => {};
   }, []);
+
+  useEffect(() => {
+    let total = 0;
+    const length = comments.length;
+    if (length === 0) return;
+    comments.forEach((comment) => {
+      total += comment.rating;
+    });
+    props.score(total / length);
+    // setScore(total / comments.length);
+  }, [comments]);
 
   function renderComment(itemData) {
     return (

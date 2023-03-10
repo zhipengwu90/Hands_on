@@ -27,6 +27,7 @@ function TasksPage({navigation}) {
               date={itemData.item.date}
               price={itemData.item.price}
               category={itemData.item.taskType}
+              isReviewed={itemData.item.isReviewed}
             />
           </ViewButton>
         );
@@ -41,7 +42,7 @@ function TasksPage({navigation}) {
           data={TaskData}
           keyExtractor={(item) => item.id}
           renderItem={renderCategoryItem}
-          style={{}}
+          style={styles.taskList}
         /> : <Text style={{textAlign: 'center', fontSize: 20, marginTop: 20}}>There is no task.</Text>}
       </View>
 
@@ -55,6 +56,10 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         flex: 1,
     },
+    taskList: {
+      flex:1
+    }
+
 
 
 });
